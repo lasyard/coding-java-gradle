@@ -1,0 +1,25 @@
+.*
+!.gitignore
+!.gitattributes
+!.editorconfig
+
+# Java files
+*.class
+*.jar
+
+# Gradle files
+.gradle
+build
+!gradle/wrapper/gradle-wrapper.jar
+
+# IntelliJ IDEA files
+*.iml
+!.idea
+.idea/dictionaries/
+.idea/libraries/
+.idea/jarRepositories.xml
+.idea/uiDesigner.xml
+.idea/modules.xml
+
+# GitHub files
+!.github

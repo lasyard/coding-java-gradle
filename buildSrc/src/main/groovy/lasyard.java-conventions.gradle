@@ -1,0 +1,37 @@
+plugins {
+    id 'java'
+    id 'checkstyle'
+}
+
+checkstyle {
+    ignoreFailures = false
+    maxWarnings = 0
+    project.ext.checkstyleVersion = 'checkstyle'.v()
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    // facilities
+    annotationProcessor 'org.projectlombok:lombok:' + 'lombok'.v()
+    compileOnly 'org.projectlombok:lombok:' + 'lombok'.v()
+    testAnnotationProcessor 'org.projectlombok:lombok:' + 'lombok'.v()
+    testCompileOnly 'org.projectlombok:lombok:' + 'lombok'.v()
+    // testing
+    testImplementation 'org.assertj:assertj-core:' + 'assertj'.v()
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:' + 'junit5'.v()
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:' + 'junit5'.v()
+    // logging
+    implementation 'org.slf4j:slf4j-api:' + 'slf4j'.v()
+    runtimeOnly 'ch.qos.logback:logback-classic:' + 'logback'.v()
+    runtimeOnly 'ch.qos.logback:logback-core:' + 'logback'.v()
+    // static check
+    compileOnly 'com.google.code.findbugs:jsr305:' + 'jsr305'.v()
+}
+
+test {
+    useJUnitPlatform()
+}

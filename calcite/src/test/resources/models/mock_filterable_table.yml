@@ -1,0 +1,9 @@
+---
+version: '1.0'
+defaultSchema: 'mock'
+schemas:
+  - name: 'mock'
+    type: 'custom'
+    factory: 'io.github.lasyard.calcite.MockSchemaFactory'
+    operand:
+      flavor: 'filterable'

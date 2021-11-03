@@ -1,0 +1,8 @@
+plugins {
+    id 'application'
+    id 'lasyard.java-conventions'
+}
+
+application {
+    mainClass = 'io.github.lasyard.hello.HelloWorld'
+}

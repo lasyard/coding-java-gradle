@@ -1,0 +1,8 @@
+plugins {
+    id 'lasyard.java-conventions'
+}
+
+dependencies {
+    implementation group: 'org.apache.calcite', name: 'calcite-core', version: 'calcite'.v()
+    implementation group: 'com.google.guava', name: 'guava', version: 'guava'.v()
+}
