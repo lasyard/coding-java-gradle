@@ -20,4 +20,5 @@ String.metaClass.v = { ext[(delegate as String) + '.version'] }
 
 include 'hello'
 include 'calcite'
+include 'rocksdb'
 

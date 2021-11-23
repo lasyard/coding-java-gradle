@@ -1,0 +1,8 @@
+plugins {
+    id 'lasyard.java-conventions'
+}
+
+dependencies {
+    implementation group: 'org.rocksdb', name: 'rocksdbjni', version: 'rocksdb'.v()
+    implementation group: 'commons-io', name: 'commons-io', version: 'commons-io'.v()
+}
