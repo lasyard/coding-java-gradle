@@ -1,0 +1,16 @@
+plugins {
+    id 'application'
+    id 'lasyard.java-conventions'
+}
+
+application {
+    mainClass = 'io.github.lasyard.avatica.server.Entry'
+}
+
+dependencies {
+    implementation group: 'org.apache.calcite', name: 'calcite-core', version: 'calcite'.v()
+    implementation group: 'org.apache.calcite.avatica', name: 'avatica-server', version: 'avatica-server'.v()
+    implementation group: 'com.google.guava', name: 'guava', version: 'guava'.v()
+}
+
+tasks.run.args('io.github.lasyard.avatica.MetaFactory')

@@ -14,6 +14,19 @@ repositories {
     mavenCentral()
 }
 
+sourceSets {
+    // `it` is a keyword of Groovy.
+    intTest {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+
+configurations {
+    intTestImplementation.extendsFrom implementation
+    intTestRuntimeOnly.extendsFrom runtimeOnly
+}
+
 dependencies {
     // facilities
     annotationProcessor 'org.projectlombok:lombok:' + 'lombok'.v()
@@ -24,6 +37,10 @@ dependencies {
     testImplementation 'org.assertj:assertj-core:' + 'assertj'.v()
     testImplementation 'org.junit.jupiter:junit-jupiter-api:' + 'junit5'.v()
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:' + 'junit5'.v()
+    // integration testing
+    intTestImplementation 'org.assertj:assertj-core:' + 'assertj'.v()
+    intTestImplementation 'org.junit.jupiter:junit-jupiter-api:' + 'junit5'.v()
+    intTestRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:' + 'junit5'.v()
     // logging
     implementation 'org.slf4j:slf4j-api:' + 'slf4j'.v()
     runtimeOnly 'ch.qos.logback:logback-classic:' + 'logback'.v()
@@ -34,4 +51,13 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+task intTest(type: Test) {
+    description = 'Runs integration tests.'
+    group = 'verification'
+    testClassesDirs = sourceSets.intTest.output.classesDirs
+    classpath = sourceSets.intTest.runtimeClasspath
+    useJUnitPlatform()
+    shouldRunAfter test
 }
