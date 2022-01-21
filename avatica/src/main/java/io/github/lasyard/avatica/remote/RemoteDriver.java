@@ -4,7 +4,7 @@ import org.apache.calcite.avatica.DriverVersion;
 import org.apache.calcite.avatica.remote.Driver;
 
 public class RemoteDriver extends Driver {
-    public static final String CONNECT_STRING_PREFIX = "jdbc:xxx:thin";
+    public static final String CONNECT_STRING_PREFIX = "jdbc:xxx:thin:";
 
     static final DriverVersion DRIVER_VERSION = new DriverVersion(
         "XXX JDBC Thin Driver",
