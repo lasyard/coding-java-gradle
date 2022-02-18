@@ -44,17 +44,18 @@ public class LocalFactory implements AvaticaFactory {
     }
 
     @Override
-    public LocalStatement newStatement(
+    public AvaticaStatement newStatement(
         AvaticaConnection connection,
         Meta.StatementHandle handle,
         int resultSetType,
         int resultSetConcurrency,
         int resultSetHoldability
-    ) {
+    ) throws SQLException {
         return new LocalStatement(
             (LocalConnection) connection,
             handle,
-            resultSetType, resultSetConcurrency,
+            resultSetType,
+            resultSetConcurrency,
             resultSetHoldability
         );
     }

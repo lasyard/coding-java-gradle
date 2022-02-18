@@ -5,8 +5,9 @@ import org.apache.calcite.avatica.Meta;
 
 import java.sql.SQLException;
 
-class LocalPreparedStatement extends AvaticaPreparedStatement {
-    protected LocalPreparedStatement(
+// `AvaticaPreparedStatement` is abstract, so there must be a class.
+final class LocalPreparedStatement extends AvaticaPreparedStatement {
+    LocalPreparedStatement(
         LocalConnection connection,
         Meta.StatementHandle handle,
         Meta.Signature signature,

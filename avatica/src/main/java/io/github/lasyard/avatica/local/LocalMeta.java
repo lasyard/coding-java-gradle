@@ -2,7 +2,9 @@ package io.github.lasyard.avatica.local;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
+import io.github.lasyard.avatica.schema.MockSchema;
 import org.apache.calcite.adapter.java.JavaTypeFactory;
+import org.apache.calcite.avatica.AvaticaParameter;
 import org.apache.calcite.avatica.ColumnMetaData;
 import org.apache.calcite.avatica.Meta;
 import org.apache.calcite.avatica.MetaImpl;
@@ -17,12 +19,12 @@ import org.apache.calcite.prepare.Prepare;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeField;
-import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
+import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -112,15 +114,35 @@ public class LocalMeta extends MetaImpl {
             ? null : origins.get(origins.size() - 1 - offsetFromEnd);
     }
 
+    private static int getScale(@Nonnull RelDataType type) {
+        return type.getScale() == RelDataType.SCALE_NOT_SPECIFIED
+            ? 0
+            : type.getScale();
+    }
+
+    private static int getPrecision(@Nonnull RelDataType type) {
+        return type.getPrecision() == RelDataType.PRECISION_NOT_SPECIFIED
+            ? 0
+            : type.getPrecision();
+    }
+
     @Override
     public StatementHandle prepare(
-        ConnectionHandle ch,
+        @Nonnull ConnectionHandle ch,
         String sql,
         long maxRowCount
     ) {
-        return null;
+        try {
+            final Signature signature = parseQuery(sql);
+            StatementHandle h = createStatement(ch);
+            h.signature = signature;
+            return h;
+        } catch (SqlParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
+    @Nonnull
     private Signature parseQuery(String sql) throws SqlParseException {
         SqlParser parser = SqlParser.create(sql, SqlParser.config());
         SqlNode sqlNode = parser.parseQuery(sql);
@@ -132,7 +154,7 @@ public class LocalMeta extends MetaImpl {
             true,
             true,
             "xxx",
-            new AbstractSchema()
+            new MockSchema()
         );
         Prepare.CatalogReader catalogReader = new CalciteCatalogReader(
             rootSchema,
@@ -152,17 +174,33 @@ public class LocalMeta extends MetaImpl {
         RelDataType jdbcType = makeStruct(typeFactory, type);
         List<List<String>> originList = sqlValidator.getFieldOrigins(sqlNode);
         final List<ColumnMetaData> columns = getColumnMetaDataList(typeFactory, jdbcType, originList);
+        RelDataType parameterRowType = sqlValidator.getParameterRowType(sqlNode);
+        final List<AvaticaParameter> parameters = new ArrayList<>();
+        for (RelDataTypeField field : parameterRowType.getFieldList()) {
+            RelDataType fieldType = field.getType();
+            SqlTypeName sqlTypeName = type.getSqlTypeName();
+            parameters.add(
+                new AvaticaParameter(
+                    false,
+                    getPrecision(fieldType),
+                    getScale(fieldType),
+                    sqlTypeName.getJdbcOrdinal(),
+                    sqlTypeName.getName(),
+                    Object.class.getName(),
+                    field.getName()));
+        }
         final Meta.CursorFactory cursorFactory = Meta.CursorFactory.ARRAY;
         return new Signature(
             columns,
             sql,
-            null,
+            parameters,
             null,
             cursorFactory,
             statementType
         );
     }
 
+    @Deprecated
     @Override
     public ExecuteResult prepareAndExecute(
         StatementHandle sh,
@@ -170,7 +208,7 @@ public class LocalMeta extends MetaImpl {
         long maxRowCount,
         PrepareCallback callback
     ) {
-        return null;
+        throw new RuntimeException("This method is deprecated.");
     }
 
     @Override
@@ -183,8 +221,7 @@ public class LocalMeta extends MetaImpl {
     ) {
         try {
             final Signature signature = parseQuery(sql);
-            LocalStatement statement = ((LocalConnection) connection).getStatement(sh);
-            statement.setMetaSignature(signature);
+            sh.signature = signature;
             int updateCount = -1; // SELECT and DML produces result set
             synchronized (callback.getMonitor()) {
                 callback.clear();
@@ -224,38 +261,43 @@ public class LocalMeta extends MetaImpl {
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public Frame fetch(
-        StatementHandle sh,
+        @Nonnull StatementHandle sh,
         long offset,
         int fetchMaxRowCount
     ) {
-        final LocalConnection localConnection = (LocalConnection) connection;
-        try {
-            LocalStatement stmt = localConnection.getStatement(sh);
-            final Iterator iterator = Iterators.singletonIterator(new Object[]{TEST_STRING});
-            final List rows = MetaImpl.collect(stmt.getCursorFactory(), iterator, new ArrayList<>());
-            boolean done = fetchMaxRowCount == 0 || rows.size() < fetchMaxRowCount;
-            return new Frame(offset, done, rows);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        final CursorFactory cursorFactory = sh.signature.cursorFactory;
+        final Iterator iterator = Iterators.singletonIterator(new Object[]{TEST_STRING});
+        final List rows = MetaImpl.collect(cursorFactory, iterator, new ArrayList<>());
+        boolean done = fetchMaxRowCount == 0 || rows.size() < fetchMaxRowCount;
+        return new Frame(offset, done, rows);
     }
 
+    @Deprecated
     @Override
     public ExecuteResult execute(
-        StatementHandle sh,
+        @Nonnull StatementHandle sh,
         List<TypedValue> parameterValues,
         long maxRowCount
     ) throws NoSuchStatementException {
-        return null;
+        throw new AssertionError("This method is deprecated.");
     }
 
     @Override
     public ExecuteResult execute(
-        StatementHandle sh,
+        @Nonnull StatementHandle sh,
         List<TypedValue> parameterValues,
         int maxRowsInFirstFrame
     ) throws NoSuchStatementException {
-        return null;
+        int updateCount = -1; // SELECT and DML produces result set
+        final MetaResultSet metaResultSet = MetaResultSet.create(
+            sh.connectionId,
+            sh.id,
+            false,
+            sh.signature,
+            null,
+            updateCount
+        );
+        return new ExecuteResult(ImmutableList.of(metaResultSet));
     }
 
     @Override

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -32,6 +33,19 @@ public class TestLocalDriver {
     public void testQuery() throws SQLException {
         try (Statement statement = connection.createStatement()) {
             try (ResultSet resultSet = statement.executeQuery("select 'whatever'")) {
+                while (resultSet.next()) {
+                    assertThat(resultSet.getString(1)).isEqualTo(LocalMeta.TEST_STRING);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testQuery1() throws SQLException {
+        String sql = "select name from mock where id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, 1);
+            try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     assertThat(resultSet.getString(1)).isEqualTo(LocalMeta.TEST_STRING);
                 }
