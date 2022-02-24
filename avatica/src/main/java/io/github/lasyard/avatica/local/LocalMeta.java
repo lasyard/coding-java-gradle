@@ -266,9 +266,9 @@ public class LocalMeta extends MetaImpl {
         int fetchMaxRowCount
     ) {
         final CursorFactory cursorFactory = sh.signature.cursorFactory;
-        final Iterator iterator = Iterators.singletonIterator(new Object[]{TEST_STRING});
+        final Iterator iterator = Iterators.singletonIterator(new Object[]{TEST_STRING, (int) offset});
         final List rows = MetaImpl.collect(cursorFactory, iterator, new ArrayList<>());
-        boolean done = fetchMaxRowCount == 0 || rows.size() < fetchMaxRowCount;
+        boolean done = fetchMaxRowCount == 0 || offset >= 10;
         return new Frame(offset, done, rows);
     }
 

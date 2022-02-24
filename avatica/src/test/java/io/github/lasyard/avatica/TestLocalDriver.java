@@ -32,9 +32,11 @@ public class TestLocalDriver {
     @Test
     public void testQuery() throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            try (ResultSet resultSet = statement.executeQuery("select 'whatever'")) {
+            try (ResultSet resultSet = statement.executeQuery("select 'whatever', 1")) {
+                int i = 0;
                 while (resultSet.next()) {
                     assertThat(resultSet.getString(1)).isEqualTo(LocalMeta.TEST_STRING);
+                    assertThat(resultSet.getInt(2)).isEqualTo(i++);
                 }
             }
         }
@@ -42,12 +44,14 @@ public class TestLocalDriver {
 
     @Test
     public void testQuery1() throws SQLException {
-        String sql = "select name from mock where id = ?";
+        String sql = "select name, id from mock where id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, 1);
             try (ResultSet resultSet = statement.executeQuery()) {
+                int i = 0;
                 while (resultSet.next()) {
                     assertThat(resultSet.getString(1)).isEqualTo(LocalMeta.TEST_STRING);
+                    assertThat(resultSet.getInt(2)).isEqualTo(i++);
                 }
             }
         }
