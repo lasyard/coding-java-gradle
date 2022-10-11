@@ -46,7 +46,8 @@ dependencies {
     runtimeOnly 'ch.qos.logback:logback-classic:' + 'logback'.v()
     runtimeOnly 'ch.qos.logback:logback-core:' + 'logback'.v()
     // static check
-    compileOnly 'com.google.code.findbugs:jsr305:' + 'jsr305'.v()
+    implementation 'org.checkerframework:checker-qual:' + 'checkerframework'.v()
+    //compileOnly 'com.google.code.findbugs:jsr305:' + 'jsr305'.v()
 }
 
 test {

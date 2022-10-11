@@ -1,5 +1,6 @@
 package io.github.lasyard.rocksdb;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.rocksdb.Options;
 import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;
@@ -7,7 +8,6 @@ import org.rocksdb.RocksIterator;
 
 import java.util.Iterator;
 import java.util.Map;
-import javax.annotation.Nonnull;
 
 public class RocksDbHandler implements AutoCloseable, Iterable<Map.Entry<byte[], byte[]>> {
     static {
@@ -22,8 +22,7 @@ public class RocksDbHandler implements AutoCloseable, Iterable<Map.Entry<byte[],
         db = RocksDB.open(options, path);
     }
 
-    @Nonnull
-    public static RocksDbHandler open(String path) throws RocksDBException {
+    public static @NonNull RocksDbHandler open(String path) throws RocksDBException {
         return new RocksDbHandler(path);
     }
 
@@ -75,13 +74,13 @@ public class RocksDbHandler implements AutoCloseable, Iterable<Map.Entry<byte[],
                     }
 
                     @Override
-                    public boolean equals(Object obj) {
-                        return false;
+                    public int hashCode() {
+                        return 0;
                     }
 
                     @Override
-                    public int hashCode() {
-                        return 0;
+                    public boolean equals(Object obj) {
+                        return false;
                     }
                 };
             }
