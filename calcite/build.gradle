@@ -3,6 +3,8 @@ plugins {
 }
 
 dependencies {
-    implementation group: 'org.apache.calcite', name: 'calcite-core', version: 'calcite'.v()
+    annotationProcessor group: 'org.immutables', name: 'value', version: 'immutables'.v()
+    compileOnly group: 'org.immutables', name: 'value', version: 'immutables'.v()
     implementation group: 'com.google.guava', name: 'guava', version: 'guava'.v()
+    implementation group: 'org.apache.calcite', name: 'calcite-core', version: 'calcite'.v()
 }

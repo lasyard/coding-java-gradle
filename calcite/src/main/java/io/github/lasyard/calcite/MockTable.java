@@ -16,11 +16,13 @@ public abstract class MockTable extends AbstractTable {
         return typeFactory.createStructType(
             Arrays.asList(
                 typeFactory.createSqlType(SqlTypeName.INTEGER),
-                typeFactory.createSqlType(SqlTypeName.VARCHAR, PRECISION)
+                typeFactory.createSqlType(SqlTypeName.VARCHAR, PRECISION),
+                typeFactory.createTypeWithNullability(typeFactory.createSqlType(SqlTypeName.DOUBLE), true)
             ),
             Arrays.asList(
                 "id",
-                "name"
+                "name",
+                "amount"
             )
         );
     }

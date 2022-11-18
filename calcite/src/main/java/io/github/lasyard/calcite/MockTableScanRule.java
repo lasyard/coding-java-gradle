@@ -4,10 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.plan.RelRule;
 import org.apache.calcite.rel.core.TableScan;
+import org.immutables.value.Value;
 
 import javax.annotation.Nonnull;
 
 @Slf4j
+@Value.Enclosing
 public class MockTableScanRule extends RelRule<MockTableScanRule.Config> {
     public static final MockTableScanRule INSTANCE = MockTableScanRule.Config.DEFAULT.toRule();
 
@@ -23,10 +25,11 @@ public class MockTableScanRule extends RelRule<MockTableScanRule.Config> {
         log.info("Transformed.");
     }
 
+    @Value.Immutable
     public interface Config extends RelRule.Config {
-        Config DEFAULT = EMPTY
-            .withOperandSupplier(b0 -> b0.operand(TableScan.class).noInputs())
-            .as(Config.class);
+        Config DEFAULT = ImmutableMockTableScanRule.Config.builder()
+            .operandSupplier(b0 -> b0.operand(TableScan.class).noInputs())
+            .build();
 
         @Override
         default MockTableScanRule toRule() {
