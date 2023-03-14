@@ -13,7 +13,9 @@
         <module name="gradle.avatica.test" />
         <module name="gradle.calcite.test" />
         <module name="gradle.rocksdb.main" />
+        <module name="gradle.netty.main" />
         <module name="gradle.hello.main" />
+        <module name="gradle.netty.test" />
       </profile>
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
