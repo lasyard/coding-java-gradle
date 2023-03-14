@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public final class MyNettyApp {
-    private final short PORT = 29375;
+    private static final short PORT = 29375;
 
     private MyNettyApp() {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
