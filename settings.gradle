@@ -18,8 +18,10 @@ String.metaClass.substringInFrontOf = {
 
 String.metaClass.v = { ext[(delegate as String) + '.version'] }
 
+include 'arrow'
 include 'avatica'
 include 'calcite'
 include 'hello'
 include 'netty'
 include 'rocksdb'
+

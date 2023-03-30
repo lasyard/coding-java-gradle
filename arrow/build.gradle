@@ -1,0 +1,8 @@
+plugins {
+    id 'lasyard.java-conventions'
+}
+
+dependencies {
+    implementation group: 'org.apache.arrow', name: 'arrow-vector', version: 'arrow'.v()
+    runtimeOnly group: 'org.apache.arrow', name: 'arrow-memory-netty', version: 'arrow'.v()
+}
