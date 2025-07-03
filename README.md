@@ -7,3 +7,5 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/lasyard/coding-java-gradle)
 
 This project contains miscellaneous coding work of mine, in java language and managed by [Gradle](https://gradle.org/).
+
+MIT License: <http://lasy.great-site.net/mit_license>.
