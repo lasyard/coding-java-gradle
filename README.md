@@ -8,4 +8,4 @@
 
 This project contains miscellaneous coding work of mine, in java language and managed by [Gradle](https://gradle.org/).
 
-MIT License: <http://lasy.great-site.net/mit_license>.
+MIT License: <https://lasy.fwh.is/mit_license>.
